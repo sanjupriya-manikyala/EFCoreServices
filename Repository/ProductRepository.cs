@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace EFCoreServices.Repository
 {
@@ -13,23 +14,32 @@ namespace EFCoreServices.Repository
             db = _DbContext;
         }
 
-        public async Task<int> AddProduct(Product prod)
+        public async Task<ProductDto> Add(Product prod)
         {
             if(db != null)
             {
-                await db.Products.AddAsync(prod);
+                await db.AddAsync(prod);
                 await db.SaveChangesAsync();
 
+                var dto = new ProductDto()
+                {
+                    Id = prod.Id,
+                    Name = prod.Name,
+                    Price = prod.Price
+                };
+
+                return dto;
+
             }
-            return 0;
+            return null;
         }
 
-        public async Task<int> DeleteProduct(int? ProdID)
+        public async Task<int> Delete(int ProdID)
         {
             int result = 0;
             if(db != null)
             {
-                var prod = await db.Products.FirstOrDefaultAsync(e => e.Id == ProdID);
+                var prod = await db.Products.SingleOrDefaultAsync(e => e.Id == ProdID);
 
                 if(prod != null)
                 {
@@ -41,25 +51,37 @@ namespace EFCoreServices.Repository
             return result;
         }
 
-        public async Task<Product> GetProductByID(int? ProdID)
+        public async Task<ProductDto> GetProductByID(int ProdID)
         {
             if(db != null)
             {
-                return await db.Products.FirstOrDefaultAsync(e => e.Id == ProdID);
+                return await (from p in db.Products
+                              select new ProductDto()
+                              {
+                                  Id = p.Id,
+                                  Name = p.Name,
+                                  Price = p.Price
+                              }).SingleOrDefaultAsync(p => p.Id == ProdID);
             }
             return null;
         }
 
-        public async Task<List<Product>> GetProductsList()
+        public async Task<List<ProductDto>> GetProductsAsync()
         {
             if(db != null)
             {
-                return await db.Products.ToListAsync();
+                return await (from p in db.Products
+                              select new ProductDto()
+                              {
+                                  Id = p.Id,
+                                  Name = p.Name,
+                                  Price = p.Price
+                              }).ToListAsync();
             }
             return null;
         }
 
-        public async Task UpdateProduct(Product prod)
+        public async Task Update(Product prod)
         {
             if(db != null)
             {

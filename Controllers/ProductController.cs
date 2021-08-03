@@ -1,5 +1,6 @@
 ﻿using EFCoreServices.Models;
-using EFCoreServices.Repository;
+using EFCoreServices.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -10,38 +11,38 @@ namespace EFCoreServices.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        IProductRepository productRepository;
-        public ProductController(ProductRepository _productRepository)
+        private readonly IProductService _productService;
+        public ProductController(ProductService productService)
         {
-            productRepository = _productRepository;
+            _productService = productService;
         }
 
         [HttpGet]
-        [Route("GetProductsList")]
-        public async Task<IActionResult> GetProductsList()
+        [Route("Products")]
+        public async Task<IActionResult> GetProductsAsync()
         {
             try
             {
-                var products = await productRepository.GetProductsList();
-                if(products == null)
+                var products = await _productService.GetProductsAsync();
+                if (products == null)
                 {
-                    return NotFound();
+                    return NoContent();
                 }
                 return Ok(products);
             }
-            catch(Exception)
+            catch (Exception ex)
             {
-                return BadRequest();
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
         [HttpGet]
-        [Route("GetProductByID")]
-        public async Task<IActionResult> GetProductByID(int? prodId)
+        [Route("Product/{id:int}")]
+        public async Task<IActionResult> GetProductByID(int prodId)
         {
             try
             {
-                var product = await productRepository.GetProductByID(prodId);
+                var product = await _productService.GetProductByID(prodId);
                 if(product == null)
                 {
                     return NotFound();
@@ -56,14 +57,14 @@ namespace EFCoreServices.Controllers
 
         [HttpPost]
         [Route("AddProduct")]
-        public async Task<IActionResult> AddProduct(Product prod)
+        public async Task<IActionResult> Add([FromBody]Product prod)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var product_Id = await productRepository.AddProduct(prod);
-                    if (product_Id > 0)
+                    var product_Id = await _productService.Add(prod);
+                    if (product_Id != null)
                     {
                         return Ok(prod);
                     }
@@ -74,22 +75,18 @@ namespace EFCoreServices.Controllers
                     return BadRequest();
                 }
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         
         [HttpDelete]
         [Route("RemoveProduct")]
-        public async Task<IActionResult> DeleteProduct(int? prodId)
+        public async Task<IActionResult> Delete(int prodId)
         {
-            int result = 0;
-            if(prodId == null)
-            {
-                return BadRequest();
-            }
+            int result;
             try
             {
-                result = await productRepository.DeleteProduct(prodId);
+                result = await _productService.Delete(prodId);
                 if(result == 0)
                 {
                     return NotFound();
@@ -98,19 +95,19 @@ namespace EFCoreServices.Controllers
             }
             catch(Exception)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
         }
 
         [HttpPut]
         [Route("UpdateProduct")]
-        public async Task<IActionResult> UpdateProduct(Product prod)
+        public async Task<IActionResult> Update([FromBody]Product prod)
         {
             if(ModelState.IsValid)
             {
                 try
                 {
-                    await productRepository.UpdateProduct(prod);
+                    await _productService.Update(prod);
                     return Ok();
 
                 }
@@ -120,10 +117,10 @@ namespace EFCoreServices.Controllers
                     {
                         return NotFound();
                     }
-                    return BadRequest();
+                    return BadRequest(ModelState);
                 }
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
     }

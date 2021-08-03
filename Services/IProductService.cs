@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using EFCoreServices.Models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using EFCoreServices.Models;
 
-namespace EFCoreServices.Repository
+namespace EFCoreServices.Services
 {
-    public interface IProductRepository
+    public interface IProductService
     {
         Task<List<ProductDto>> GetProductsAsync();
 
