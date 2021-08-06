@@ -3,48 +3,39 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using EFCoreServices.DTO;
 
 namespace EFCoreServices.Repository
 {
-    public class ProductRepository : IProductRepository
+    public class Repository : IRepository<Product>
     {
         ProductDBContext db;
-        public ProductRepository(ProductDBContext _DbContext)
+        public Repository(ProductDBContext _DbContext)
         {
             db = _DbContext;
         }
 
-        public async Task<ProductDto> Add(Product prod)
+        public async Task AddAsync(Product product)
         {
             
-                await db.AddAsync(prod);
+                await db.AddAsync(product);
                 await db.SaveChangesAsync();
-
-                var dto = new ProductDto()
-                {
-                    Id = prod.Id,
-                    Name = prod.Name,
-                    Price = prod.Price
-                };
-
-                return dto;
         }
 
-        public async Task<int> Delete(int ProdID)
+        public async Task<int> DeleteAsync(int productID)
         {
-            int result = 0;
 
-                var prod = await db.Products.SingleOrDefaultAsync(e => e.Id == ProdID);
+                var product = await db.Products.SingleOrDefaultAsync(e => e.Id == productID);
 
-                if(prod != null)
-                {
-                    db.Products.Remove(prod);
-                    result = await db.SaveChangesAsync();
-                }
-                return result;
+                    if(product != null)
+                    {
+                        db.Products.Remove(product);
+                        await db.SaveChangesAsync();
+                    }
+                return 0;
         }
 
-        public async Task<ProductDto> GetProductByID(int ProdID)
+        public async Task<ProductDto> GetByIDAsync(int productID)
         {
 
                 return await (from p in db.Products
@@ -53,7 +44,7 @@ namespace EFCoreServices.Repository
                                   Id = p.Id,
                                   Name = p.Name,
                                   Price = p.Price
-                              }).SingleOrDefaultAsync(p => p.Id == ProdID);
+                              }).SingleOrDefaultAsync(p => p.Id == productID);
 
         }
 
@@ -70,11 +61,11 @@ namespace EFCoreServices.Repository
 
         }
 
-        public async Task Update(Product prod)
+        public async Task UpdateAsync(Product product)
         {
 
-                db.Products.Update(prod);
-                await db.SaveChangesAsync(); 
+                db.Products.Update(product);
+                await db.SaveChangesAsync();
         }
     }
 }

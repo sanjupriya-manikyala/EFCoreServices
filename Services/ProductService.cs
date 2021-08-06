@@ -1,28 +1,51 @@
-﻿using EFCoreServices.Models;
+﻿using EFCoreServices.DTO;
+using EFCoreServices.Models;
 using EFCoreServices.Repository;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EFCoreServices.Services
 {
-    public class ProductService : IProductService
+    public class ProductService
     {
-        private readonly IProductRepository _productRepo;
+        private readonly IRepository<Product> _repository;
 
-        public ProductService(IProductRepository productRepo)
+        public ProductService(IRepository<Product> repository)
         {
-            _productRepo = productRepo;
+            _repository = repository;
         }
 
-        public Task<List<ProductDto>> GetProductsAsync() => _productRepo.GetProductsAsync();
+        public Task<List<ProductDto>> GetProductsAsync() => _repository.GetProductsAsync();
 
-        public Task<ProductDto> GetProductByID(int prodID) => _productRepo.GetProductByID(prodID);
+        public Task<ProductDto> GetByIDAsync(int productID) => _repository.GetByIDAsync(productID);
 
-        public Task<ProductDto> Add(Product prod) => _productRepo.Add(prod);
+        public async Task<ProductDto> AddAsync(Product product)
+        {
+            await _repository.AddAsync(product);
+            var productDto = new ProductDto()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price
+            };
+            return productDto;
 
-        public Task<int> Delete(int prodID) => _productRepo.Delete(prodID);
+        }
 
-        public Task Update(Product prod) => _productRepo.Update(prod);
+        public Task<int> DeleteAsync(int productID) => _repository.DeleteAsync(productID);
+
+        public async Task<ProductDto> UpdateAsync(Product product)
+        {
+            await _repository.UpdateAsync(product);
+            var productDto = new ProductDto()
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price
+            };
+            return productDto;
+
+        }
     }
 
 }

@@ -16,8 +16,7 @@ namespace EFCoreServices.Models
         }
 
         public virtual DbSet<Product> Products { get; set; }
-        public object ProductDto { get; internal set; }
-
+        
         /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
