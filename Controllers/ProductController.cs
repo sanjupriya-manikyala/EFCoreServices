@@ -1,4 +1,4 @@
-﻿using EFCoreServices.Models;
+﻿using EFCoreServices.DTO;
 using EFCoreServices.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +18,7 @@ namespace EFCoreServices.Controllers
         {
             _productService = productService;
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetProductsAsync()
@@ -55,8 +56,9 @@ namespace EFCoreServices.Controllers
             }
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromBody] Product product)
+        public async Task<IActionResult> AddAsync([FromBody] ProductDto product)
         {
             if (ModelState.IsValid)
             {
@@ -77,7 +79,7 @@ namespace EFCoreServices.Controllers
             return null;
         }
 
-        
+
         [HttpDelete]
         public async Task<IActionResult> DeleteAsync(int productId)
         {
@@ -97,8 +99,9 @@ namespace EFCoreServices.Controllers
             return null;
         }
 
+
         [HttpPut]
-        public async Task<IActionResult> UpdateAsync([FromBody] Product product)
+        public async Task<IActionResult> UpdateAsync([FromBody] ProductDto product)
         {
             if(ModelState.IsValid)
             {

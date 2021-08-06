@@ -19,31 +19,32 @@ namespace EFCoreServices.Services
 
         public Task<ProductDto> GetByIDAsync(int productID) => _repository.GetByIDAsync(productID);
 
-        public async Task<ProductDto> AddAsync(Product product)
+        public async Task<ProductDto> AddAsync(ProductDto product)
         {
-            await _repository.AddAsync(product);
-            var productDto = new ProductDto()
+            var model = new Product()
             {
                 Id = product.Id,
                 Name = product.Name,
                 Price = product.Price
             };
-            return productDto;
+            await _repository.AddAsync(model);
+            return product;
 
         }
 
         public Task<int> DeleteAsync(int productID) => _repository.DeleteAsync(productID);
 
-        public async Task<ProductDto> UpdateAsync(Product product)
+        public async Task<ProductDto> UpdateAsync(ProductDto product)
         {
-            await _repository.UpdateAsync(product);
-            var productDto = new ProductDto()
+            var model = new Product()
             {
                 Id = product.Id,
                 Name = product.Name,
                 Price = product.Price
             };
-            return productDto;
+
+            await _repository.UpdateAsync(model);
+            return product;
 
         }
     }
