@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EFCoreServices.DTO;
-using EFCoreServices.Models;
 
 namespace EFCoreServices.Repository
 {

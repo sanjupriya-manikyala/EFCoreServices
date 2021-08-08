@@ -14,11 +14,12 @@ namespace EFCoreServices.Controllers
     {
 
         private readonly ProductService _productService;
+
         public ProductController(ProductService productService)
         {
             _productService = productService;
-        }
 
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetProductsAsync()
@@ -37,7 +38,7 @@ namespace EFCoreServices.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> GetByIDAsync(int productId)
         {
@@ -76,7 +77,7 @@ namespace EFCoreServices.Controllers
                     ModelState.AddModelError("", "Unable to save changes, please try again");
                 }
             }
-            return null;
+            return Ok();
         }
 
 
@@ -96,7 +97,7 @@ namespace EFCoreServices.Controllers
             {
                 ModelState.AddModelError("", "Unable to save changes, please try again");
             }
-            return null;
+            return Ok();
         }
 
 
@@ -116,7 +117,7 @@ namespace EFCoreServices.Controllers
                     ModelState.AddModelError("","Unable to save changes, please try again");
                 }
             }
-            return null;
+            return Ok();
         }
 
     }
