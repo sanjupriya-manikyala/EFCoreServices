@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>EFCoreServices</name>
+    </assembly>
+    <members>
+        <member name="M:EFCoreServices.Controllers.ProductController.GetProductsAsync">
+            <summary>
+            Get method
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:EFCoreServices.Controllers.ProductController.GetByIDAsync(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="productId"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
