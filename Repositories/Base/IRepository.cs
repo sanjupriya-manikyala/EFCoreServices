@@ -6,14 +6,14 @@ namespace EFCoreServices.Repository
 {
     public interface IRepository<Product>
     {
-        Task<List<ProductDto>> GetProductsAsync();
+        Task<List<Product>> GetProductsAsync();
 
-        Task<ProductDto> GetByIDAsync(int productID);
+        Task<Product> GetByIDAsync(int productID);
 
-        Task AddAsync(Product product);
+        Task<Product> AddAsync(Product product);
 
-        Task<int> DeleteAsync(int productID);
+        Task DeleteAsync(int productID);
 
-        Task UpdateAsync(Product product);
+        Task<Product> UpdateAsync(Product product);
     }
 }

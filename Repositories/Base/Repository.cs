@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using EFCoreServices.DTO;
 
 namespace EFCoreServices.Repository
 {
@@ -15,14 +14,15 @@ namespace EFCoreServices.Repository
             db = _DbContext;
         }
 
-        public async Task AddAsync(Product product)
+        public async Task<Product> AddAsync(Product product)
         {
             
-                await db.AddAsync(product);
+                var result = await db.AddAsync(product);
                 await db.SaveChangesAsync();
+                return result.Entity;
         }
 
-        public async Task<int> DeleteAsync(int productID)
+        public async Task DeleteAsync(int productID)
         {
 
                 var product = await db.Products.SingleOrDefaultAsync(e => e.Id == productID);
@@ -32,40 +32,29 @@ namespace EFCoreServices.Repository
                         db.Products.Remove(product);
                         await db.SaveChangesAsync();
                     }
-                return 0;
+                
         }
 
-        public async Task<ProductDto> GetByIDAsync(int productID)
+        public async Task<Product> GetByIDAsync(int productID)
         {
 
-                return await (from p in db.Products
-                              select new ProductDto()
-                              {
-                                  Id = p.Id,
-                                  Name = p.Name,
-                                  Price = p.Price
-                              }).SingleOrDefaultAsync(p => p.Id == productID);
+            return await db.Products.Where(x => x.Id == productID).SingleOrDefaultAsync();
 
         }
 
-        public async Task<List<ProductDto>> GetProductsAsync()
+        public async Task<List<Product>> GetProductsAsync()
         {
 
-                return await (from p in db.Products
-                              select new ProductDto()
-                              {
-                                  Id = p.Id,
-                                  Name = p.Name,
-                                  Price = p.Price
-                              }).ToListAsync();
+            return await db.Products.ToListAsync();
 
         }
 
-        public async Task UpdateAsync(Product product)
+        public async Task<Product> UpdateAsync(Product product)
         {
 
-                db.Products.Update(product);
+                var result = db.Products.Update(product);
                 await db.SaveChangesAsync();
+                return result.Entity;
         }
     }
 }

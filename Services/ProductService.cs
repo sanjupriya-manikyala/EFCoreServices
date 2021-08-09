@@ -3,14 +3,15 @@ using EFCoreServices.Models;
 using EFCoreServices.Repository;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace EFCoreServices.Services
 {
     public class ProductService
     {
-        private readonly IRepository<Product> _repository;
+        private readonly IProductRepository _repository;
 
-        public ProductService(IRepository<Product> repository)
+        public ProductService(IProductRepository repository)
         {
             _repository = repository;
         }
@@ -23,28 +24,22 @@ namespace EFCoreServices.Services
         {
             var model = new Product()
             {
-                Id = product.Id,
                 Name = product.Name,
                 Price = product.Price
             };
-            await _repository.AddAsync(model);
-            return product;
+            var result = await _repository.AddAsync(model);
+            return result;
 
         }
 
-        public Task<int> DeleteAsync(int productID) => _repository.DeleteAsync(productID);
+        public Task DeleteAsync(int productID) => _repository.DeleteAsync(productID);
 
         public async Task<ProductDto> UpdateAsync(ProductDto product)
         {
-            var model = new Product()
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price
-            };
+            var model = new Product();
 
-            await _repository.UpdateAsync(model);
-            return product;
+            var result = await _repository.UpdateAsync(model);
+            return result;
 
         }
     }

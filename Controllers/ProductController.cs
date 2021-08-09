@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace EFCoreServices.Controllers
 {
@@ -15,9 +16,12 @@ namespace EFCoreServices.Controllers
 
         private readonly ProductService _productService;
 
-        public ProductController(ProductService productService)
+        private readonly ILogger _logger;
+
+        public ProductController(ProductService productService, ILogger logger)
         {
             _productService = productService;
+            _logger = logger;
 
         }
 
@@ -35,11 +39,12 @@ namespace EFCoreServices.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogInformation(StatusCodes.Status500InternalServerError, ex.Message);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
-        
-        [HttpGet]
+
+        [HttpGet("{productId:int}")]
         public async Task<IActionResult> GetByIDAsync(int productId)
         {
             try
@@ -53,6 +58,7 @@ namespace EFCoreServices.Controllers
             }
             catch(Exception ex)
             {
+                _logger.LogInformation(StatusCodes.Status503ServiceUnavailable, ex.Message);
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, ex.Message);
             }
         }
@@ -71,13 +77,15 @@ namespace EFCoreServices.Controllers
                         return Ok(product);
                     }
                     return NoContent();
+                    
                 }
-                catch (DbUpdateException)
+                catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Unable to save changes, please try again");
+                    _logger.LogInformation(StatusCodes.Status422UnprocessableEntity, ex.Message);
+                    return StatusCode(StatusCodes.Status422UnprocessableEntity, ex.Message);
                 }
             }
-            return Ok();
+            
         }
 
 
@@ -86,18 +94,18 @@ namespace EFCoreServices.Controllers
         {
             try
             {
-                int result = await _productService.DeleteAsync(productId);
-                if(result == 0)
-                {
-                    return NotFound();
-                }
+                await _productService.DeleteAsync(productId);
                 return Ok();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                ModelState.AddModelError("", "Unable to save changes, please try again");
+                _logger.LogInformation(StatusCodes.Status422UnprocessableEntity, ex.Message);
+                return StatusCode(StatusCodes.Status422UnprocessableEntity, ex.Message);
             }
-            return Ok();
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(StatusCodes.Status422UnprocessableEntity, ex.Message);
+            }
         }
 
 
@@ -112,12 +120,12 @@ namespace EFCoreServices.Controllers
                     return Ok();
 
                 }
-                catch(DbUpdateException)
+                catch(Exception ex)
                 {
-                    ModelState.AddModelError("","Unable to save changes, please try again");
+                    _logger.LogInformation(StatusCodes.Status422UnprocessableEntity, ex.Message);
+                    return StatusCode(StatusCodes.Status422UnprocessableEntity, ex.Message);
                 }
             }
-            return Ok();
         }
 
     }

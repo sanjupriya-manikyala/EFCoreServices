@@ -13,7 +13,7 @@ namespace EFCoreServices.Repository
 
         Task<ProductDto> AddAsync(Product product);
 
-        Task<int> DeleteAsync(int productID);
+        Task DeleteAsync(int productID);
 
         Task<ProductDto> UpdateAsync(Product product);
     }
